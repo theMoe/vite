@@ -1,14 +1,14 @@
-## vite scripts
+# vite scripts
 
 ## Node Status [[VITE_nodeStatus.py](https://github.com/theMoe/vite/blob/main/VITE_nodeStatus.py)]
 
-# Requirements
+### Requirements
 * Python
 
-# Install
+### Install
 Store the file anywhere you want to run it.
 
-# Setup
+### Setup
 **Variables**
 Update the variable nodeDetails with the IP-addresses and the names of the node, which should be monitored. The name must not be exactly the name like the nodes name in the node_config.json. It's just for the message as information.
 ```python
@@ -20,19 +20,19 @@ nodeDetails = [
 
 **Telegram**
 Create telegram bot
-a) Open Telegram
-b) Open new conversation with @BotFather
-c) Create new bot sending to @BotFather this text: /newbot
-d) Answer to @BotFather with a name of your bot (e.g.: viteNews)
-e) Answer to @BotFather with a username of your bot (e.g.: viteNews_bot)
-f) Save the HTTP API that @BotFather has created.
-g) Create a group on your Telegram and add your new bot to the group.
-h) Add @my_id_bot to the same group.
-i) Send /getgroupid to the group and save the Group ID.
+1. Open Telegram
+2. Open new conversation with @BotFather
+3. Create new bot sending to @BotFather this text: /newbot
+4. Answer to @BotFather with a name of your bot (e.g.: viteNews)
+5. Answer to @BotFather with a username of your bot (e.g.: viteNews_bot)
+6. Save the HTTP API that @BotFather has created.
+7. Create a group on your Telegram and add your new bot to the group.
+8. Add @my_id_bot to the same group.
+9. Send /getgroupid to the group and save the Group ID.
 
 Example URL request to test it:
 ```
-https://api.telegram.org/bot[###YOUR BOT HTTP API saved from the step f###])/sendMessage?chat_id=-[###YOUR GROUP ID saved from the step i###]&text=Hello+world&user=User&password=Password&to=12345678
+https://api.telegram.org/bot[###YOUR BOT HTTP API saved from the step 6###])/sendMessage?chat_id=-[###YOUR GROUP ID saved from the step 9###]&text=Hello+world&user=User&password=Password&to=12345678
 ```
 User,password and to are not needed.
 
@@ -40,13 +40,13 @@ Update variables in telgramMsg() function.
 ```python
 def telegramMsg(msg):
     data = {
-        'chat_id': '[###GROUP ID from step i###]',
+        'chat_id': '[###GROUP ID from step 9###]',
         'text': msg,
         'user': '[### optional, just use User###]',
         'password': '[### optional, just use Password###]',
         'to': '[### optional, just use 12345678###]'
     }
-    url = 'https://api.telegram.org/bot[###BOT API from step f###]/sendMessage'
+    url = 'https://api.telegram.org/bot[###BOT API from step 6###]/sendMessage'
     response = requests.post(url, data=data)
 ```
 
@@ -60,7 +60,7 @@ def prepareMsg(data):
         telegramMsg(msg)
 ```
 
-# Run
+### Run
 **One time**
 ```
 python3 VITE_nodeStatus.py
@@ -82,19 +82,19 @@ Hint: Esay way to create the right crontab time settings https://crontab.guru
 
 ## Node Status Scriptable [[VITE_nodeStatus.scriptable](https://github.com/theMoe/vite/blob/main/VITE_nodeStatus.scriptable), [VITE_nodeStatus_scriptable.txt](https://github.com/theMoe/vite/blob/main/VITE_nodeStatus_scriptable.txt)]
 
-# Requirements
+### Requirements
 Download Scriptable from the App Store
 https://scriptable.app/
 
-# Install
+### Install
 Import .scriptable or copy code from .txt
 
-# Setup
+### Setup
 **Variable**
 Update the variable nodeDetail with the IP-adresses and name of the node. The node name HAVE TO be the same like in node_config.json.
 ```
 const nodeDetail = [['x.x.x.ip1', 'nodeName1'],['...', '....']]
 ```
 
-# Run
+### Run
 To run the code, just click it in Scriptable. You can also add it to your home screen.
