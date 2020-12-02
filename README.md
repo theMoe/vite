@@ -10,6 +10,7 @@ Store the file anywhere you want to run it.
 
 ### Setup
 **Variables**
+
 Update the variable nodeDetails with the IP-addresses and the names of the node, which should be monitored. The name must not be exactly the name like the nodes name in the node_config.json. It's just for the message as information.
 ```python
 nodeDetails = [
@@ -19,6 +20,7 @@ nodeDetails = [
 ```
 
 **Telegram**
+
 Create telegram bot
 1. Open Telegram
 2. Open new conversation with @BotFather
@@ -34,7 +36,7 @@ Example URL request to test it:
 ```
 https://api.telegram.org/bot[###YOUR BOT HTTP API saved from the step 6###])/sendMessage?chat_id=-[###YOUR GROUP ID saved from the step 9###]&text=Hello+world&user=User&password=Password&to=12345678
 ```
-User,password and to are not needed.
+User, password and to are not needed.
 
 Update variables in telgramMsg() function.
 ```python
@@ -70,6 +72,7 @@ or
 python VITE_nodeStatus.py
 ```
 **On a regular basis e.g. cronjob [ubuntu]**
+
 Create a cronjob by opening the crontab from the ubuntu command line
 ```
 crontab -e
@@ -91,6 +94,7 @@ Import .scriptable or copy code from .txt
 
 ### Setup
 **Variable**
+
 Update the variable nodeDetail with the IP-adresses and name of the node. The node name HAVE TO be the same like in node_config.json.
 ```
 const nodeDetail = [['x.x.x.ip1', 'nodeName1'],['...', '....']]
