@@ -79,7 +79,7 @@ crontab -e
 ```
 For every 15 minutes, just add the following example at the end of the cronjob file
 ```
-0,15,30,45 * * * * python /home/[###ubuntu user###]/[###folders###]/VITE_nodeStatus.py
+0,15,30,45 * * * * python3 /home/[###ubuntu user###]/[###folders###]/VITE_nodeStatus.py
 ```
 Hint: Esay way to create the right crontab time settings https://crontab.guru
 
