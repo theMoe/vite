@@ -9,25 +9,25 @@ const nodeDetail = [['x.x.x.ip1', 'nodeName1'],['...', '....']]
 
 let widget = await createWidget()
 if (!config.runsInWidget) {
-  await widget.presentSmall()
+ await widget.presentSmall()
 }
 
 Script.setWidget(widget)
 Script.complete()
 
 async function createWidget(items) {
-  let viteAddress
+ let viteAddress
 
-  if(args.widgetParameter) {
-    console.log('get fixed lat/lon')
-    const fixedAdr = args.widgetParameter.split(",").map(parseFloat)
-    viteAddress = {
-      addr: fixedAdr[0]
-    }
-  } else {
-    viteAddress = 'viteAdress...'
-  }
-  console.log(urlGetAlivePeers(viteAddress))
+ if(args.widgetParameter) {
+   console.log('get fixed lat/lon')
+   const fixedAdr = args.widgetParameter.split(",").map(parseFloat)
+   viteAddress = {
+     addr: fixedAdr[0]
+   }
+ } else {
+   viteAddress = 'viteAdress...'
+ }
+ console.log(urlGetAlivePeers(viteAddress))
 
 //   const data = await new Request(urlGetAlivePeers(viteAddress)).loadJSON()
 //   let req = new Request(urlGetAlivePeers(viteAddress))
@@ -37,39 +37,47 @@ async function createWidget(items) {
 
 //   const size = data.size
 
-  const list = new ListWidget()
-  const header = list.addText("Vite Nodes 🌖")
-  header.font = Font.mediumSystemFont(13)
+ const list = new ListWidget()
+ const header = list.addText("Vite Nodes 🌖")
+ header.font = Font.mediumSystemFont(13)
 
-  list.addSpacer(5)
+ list.addSpacer(5)
 
-  for (i = 0; i < nodeDetail.length; i++) {
-    const ip = nodeDetail[i][0]
-    const name = nodeDetail[i][1]
+ for (i = 0; i < nodeDetail.length; i++) {
+   const ip = nodeDetail[i][0]
+   const name = nodeDetail[i][1]
 //     console.log(nodeDetail[i])
+
 //     console.log("http://" + ip + ":48132")
-    let req2 = new Request("http://" + ip + ":48132")
-    req2.allowInsecureRequest = true
-    req2.method = "POST"
-    req2.headers = {
-      "Cache-Control": "no-cache",
-      "Content-Type": "application/json"
-    }
-    req2.body = JSON.stringify({
-      "jsonrpc": "2.0",
-      "id": 2,
-      "method": "ledger_getSnapshotChainHeight",
-      "params": null
-    })
-    const data2 = await req2.loadJSON()
-    if (!data2) {
-      let lT = list.addText(name + ": offline")
-      lT.font = Font.mediumSystemFont(10)
-    } else {
-      let lT = list.addText(name + ": " + data2.result)
-      lT.font = Font.mediumSystemFont(10)
-    }
-  }
+   let req2 = new Request("http://" + ip + ":48132")
+   req2.allowInsecureRequest = true
+   req2.method = "POST"
+   req2.headers = {
+     "Cache-Control": "no-cache",
+     "Content-Type": "application/json"
+   }
+   req2.body = JSON.stringify({
+     "jsonrpc": "2.0",
+     "id": 2,
+     "method": "ledger_getSnapshotChainHeight",
+     "params": null
+   })
+   try {
+     const data2 = await req2.loadJSON()
+
+     if (!data2) {
+       let lT = list.addText(name + ": offline")
+       lT.font = Font.regularMonospacedSystemFont(9)
+     } else {
+       let lT = list.addText(name + ": " + Number(data2.result).toLocaleString())
+       lT.font = Font.regularMonospacedSystemFont(9)
+     }
+   } catch (error) {
+//   console.error(error)
+     let lT = list.addText(name + ": offline")
+     lT.font = Font.regularMonospacedSystemFont(9)
+   }
+ }
 
 //   if(!data || !data.list|| !data.list.length) {
 //     const errorList = new ListWidget()
@@ -82,5 +90,5 @@ async function createWidget(items) {
 //     list.addText(data.list[i].nodeName + ": " + data.list[i].isAlive)
 //   }
 
-  return list
+ return list
 }
