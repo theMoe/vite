@@ -1,5 +1,3 @@
-# vite scripts
-
 ## Node Status [[VITE_nodeStatus.py](https://github.com/theMoe/vite/blob/main/002_NodeStatus/VITE_nodeStatus.py)]
 
 ### Requirements

@@ -1,5 +1,3 @@
-# vite scripts
-
 ## Node Status Scriptable [[VITE_nodeStatus.scriptable](https://github.com/theMoe/vite/blob/main/001_NodeStatusScriptable/VITE_nodeStatus.scriptable), [VITE_nodeStatus_scriptable.txt](https://github.com/theMoe/vite/blob/main/001_NodeStatusScriptable/VITE_nodeStatus_scriptable.txt)]
 
 ### Requirements

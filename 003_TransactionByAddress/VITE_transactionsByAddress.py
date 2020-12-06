@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description='Request parameters')
 # Add the arguments
 parser.add_argument('--vaddr', type=str, help='VITE address')
 parser.add_argument('--nodeIP', type=str, help='VITE node IP')
-parser.add_argument('--fromDate', type=lambda s: datetime.strptime(s, '%Y-%m-%d'), help='From date YYYY-MM-DD (incl.)')
-parser.add_argument('--toDate', type=lambda s: datetime.strptime(s, '%Y-%m-%d'), help='To date YYYY-MM-DD (incl.)')
+parser.add_argument('--fromDate', type=lambda s: datetime.strptime(s, '%Y-%m-%d'), help='From date YYYY-MM-DD (incl.) [optional]')
+parser.add_argument('--toDate', type=lambda s: datetime.strptime(s, '%Y-%m-%d'), help='To date YYYY-MM-DD (incl.) [optional]')
 
 # Execute the parse_args() method
 args = parser.parse_args()
