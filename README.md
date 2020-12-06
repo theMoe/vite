@@ -4,5 +4,5 @@
 
 [002 Node Status](https://github.com/theMoe/vite/blob/main/002_NodeStatus/)
 
-[003 Transactions by Address](https://github.com/theMoe/vite/blob/main/003_TransactionByAddress/)
+[003 Transactions by Address](https://github.com/theMoe/vite/blob/main/003_TransactionsByAddress/)
 
