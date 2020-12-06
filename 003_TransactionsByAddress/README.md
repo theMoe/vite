@@ -1,4 +1,4 @@
-## Transactions by Address [[VITE_transactionsByAddress.py](https://github.com/theMoe/vite/blob/main/003_TransactionByAddress/VITE_transactionsByAddress.py)]
+## Transactions by Address [[VITE_transactionsByAddress.py](https://github.com/theMoe/vite/blob/main/003_TransactionsByAddress/VITE_transactionsByAddress.py)]
 
 The script creates a JSON- and a CSV-file with all transactions for a specific VITE_ADDRESS.
 
