@@ -15,5 +15,15 @@ Update the variable nodeDetail with the IP-adresses and name of the node. The no
 const nodeDetail = [['x.x.x.ip1', 'nodeName1'],['...', '....']]
 ```
 
+If the font size is too small, just change:
+```
+const fontSize = 7
+```
+
+If you want to get information about the online ratio of the nodes from the last complete cycle, just set loadCycleOnlineRatio to true. A JSON-file cycleData.json will be stored on your phone. As the request usualy takes a little bit longer, the cycle information will only be requested once a day.
+```
+const loadCycleOnlineRatio = true
+```
+
 ### Run
 To run the code, just click it in Scriptable. You can also add it to your home screen.

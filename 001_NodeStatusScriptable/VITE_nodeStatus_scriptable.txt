@@ -4,8 +4,27 @@
 
 const urlGetAlivePeers = (viteAddress) => `https://stats.vite.net/api/getAlivePeers?address=vite_adress`
 // ${encodeURIComponent(viteAddress)}`
+const urlCycles = 'https://rewardapi.vite.net/reward/full/real?cycle='
+const fontSize = 7
+const loadCycleOnlineRatio = true
 
-const nodeDetail = [['x.x.x.ip1', 'nodeName1'],['...', '....']]
+const nodeDetail = [['xx.xx.xx.ip1', 'node1'],['...', '...']]
+function saveCycle(cycleData) {
+ let fm = FileManager.iCloud()
+ let path = fm.joinPath(fm.documentsDirectory(), "cycleData.json")
+ fm.writeString(path, JSON.stringify(cycleData))
+}
+
+function getCycle() {
+ let fm = FileManager.iCloud()
+ let path = fm.joinPath(fm.documentsDirectory(), "cycleData.json")
+ if (fm.fileExists(path) == true) {
+   let data = fm.readString(path)
+   return JSON.parse(data)
+ } else {
+   return null
+ }
+}
 
 let widget = await createWidget()
 if (!config.runsInWidget) {
@@ -17,6 +36,8 @@ Script.complete()
 
 async function createWidget(items) {
  let viteAddress
+ const cycle_incomplete=Math.floor(((Date.now() / 1000) - 1558411200) / 24 / 3600)
+ const cycle = cycle_incomplete - 1
 
  if(args.widgetParameter) {
    console.log('get fixed lat/lon')
@@ -41,11 +62,54 @@ async function createWidget(items) {
  const header = list.addText("Vite Nodes 🌖")
  header.font = Font.mediumSystemFont(13)
 
+ if (loadCycleOnlineRatio) {
+   let cD = getCycle()
+   let lJ
+   var cycleData = {}
+   if (cD == null) {
+     lJ = true
+   } else if (cD['cycle'] != cycle) {
+     lJ = true
+   } else {
+     lJ = false
+     cycleData = cD
+   }
+
+
+   if (lJ) {
+     let data0 = {}
+     let req0 = new Request(urlCycles + cycle)
+     req0.method = "GET"
+//   let data0 = null
+     try {
+       data0 = await req0.loadJSON()
+     } catch (error) {
+       data0 = null
+     }
+ //   console.log(data0)
+
+     for (data in data0.data) {
+       if (data0.data[data].address == viteAddress) {
+ //       console.log(data0.data[data].onlineRatio)
+         cycleData[data0.data[data].ip] = (data0.data[data].onlineRatio).toFixed(3)
+       }
+     }
+     cycleData['cycle'] = cycle
+     saveCycle(cycleData)
+   }
+ }
  list.addSpacer(5)
 
  for (i = 0; i < nodeDetail.length; i++) {
    const ip = nodeDetail[i][0]
    const name = nodeDetail[i][1]
+
+   var onlineRatio = ''
+   if (loadCycleOnlineRatio) {
+   if (cycleData[ip] != false) {
+     onlineRatio = ' (' + cycleData[ip] + ')'
+   }
+ }
 //     console.log(nodeDetail[i])
 
 //     console.log("http://" + ip + ":48132")
@@ -66,16 +130,16 @@ async function createWidget(items) {
      const data2 = await req2.loadJSON()
 
      if (!data2) {
-       let lT = list.addText(name + ": offline")
-       lT.font = Font.regularMonospacedSystemFont(9)
+       let lT = list.addText(name + ": offline" + onlineRatio)
+       lT.font = Font.regularMonospacedSystemFont(fontSize)
      } else {
-       let lT = list.addText(name + ": " + Number(data2.result).toLocaleString())
-       lT.font = Font.regularMonospacedSystemFont(9)
+       let lT = list.addText(name + ": " + Number(data2.result).toLocaleString() + onlineRatio)
+       lT.font = Font.regularMonospacedSystemFont(fontSize)
      }
    } catch (error) {
 //   console.error(error)
-     let lT = list.addText(name + ": offline")
-     lT.font = Font.regularMonospacedSystemFont(9)
+     let lT = list.addText(name + ": offline" + onlineRatio)
+     lT.font = Font.regularMonospacedSystemFont(fontSize)
    }
  }
 
