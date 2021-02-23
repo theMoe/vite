@@ -6,3 +6,5 @@
 
 [003 Transactions by Address](https://github.com/theMoe/vite/blob/main/003_TransactionsByAddress/)
 
+[004 vitetxs](https://github.com/theMoe/vite/blob/main/004_vitetxs/)
+

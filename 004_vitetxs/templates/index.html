@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>VITE Transaction Downloader</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/Footer-Dark.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/Login-Form-Dark.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/Navigation-Clean.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        #loading {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #2880ee; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean">
+        <div class="container"><a class="navbar-brand" href="#" style="background: url(&quot;/static/img/logo_black_transparent.png&quot;) left / contain no-repeat;padding-left: 45px;">VITE Downloader</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="https://www.vite.org" target="_blank">vite.org</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://x.vite.net" target="_blank">exchange</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://vitescan.io" target="_blank">vite scan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://explorer.vite.net" target="_blank">explorer</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="login-dark" style="width: 100%;min-height: 600px;height: auto;">
+        <form action="." method="POST">
+            <h2 class="sr-only">Login Form</h2>
+            <div class="illustration" style="padding-bottom: 5px;padding-top: 5px;">
+                <h5>VITE Transactions</h5>
+            </div>
+            <p style="font-size: 12px;text-align: center;padding-bottom: 15px;">Download VITE transactions<br>by address as .csv file.</p>
+            <div class="form-group"><input class="form-control" type="text" name="viteAddress" placeholder="VITE Address"></div>
+            <div class="form-group"><input class="form-control" type="date" name="fromDate" placeholder="From Date"></div>
+            <div class="form-group"><input class="form-control" type="date" name="toDate" placeholder="To Date"></div>
+            <div class="form-group">
+                <button id="btnDownload" class="btn btn-primary btn-block" onclick="$('#btnDownload').hide();$('#loading').show();" type="submit">Download</button>
+            </div>
+            <div class="form-group" style="display: flex; justify-content: center;align-items: center"><div id="loading" style="display:none;"></div></div>
+
+            <p class="text-center" style="font-size: 9px;color: var(--gray);">(max. last 100k transactions)</p>
+            {% if errShow %}
+                <p class="text-center" style="font-size: 9px;color: var(--gray);">{{ errMsg }}</p>
+            {% endif %}
+        </form>
+    </div>
+    <div class="footer-dark" style="padding-top: 20px;padding-bottom: 20px;">
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 item text" style="margin-bottom: 10px;">
+                        <a href="{{ url_for('index') }}" style="color: rgb(249,251,252);">VITE Downloader</a><br />
+                        <a href="{{ url_for('impressum') }}" style="color: rgb(249,251,252);">Impressum</a>
+                        <p style="font-size: 9px;color: var(--gray);">{{ viteTxsVersion }}</p>
+                    </div>
+                    <div class="col-md-6 item text" style="margin-bottom: 10px;">
+                    </div>
+                </div>
+                <p class="copyright" style="padding-top: 0px;">Moe © 2021</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+</body>
+
+</html>
