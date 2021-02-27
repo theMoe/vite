@@ -43,21 +43,34 @@ def prepareMsg(data):
     msg = 'VITE-Nodes Update:'
     send = False
     for node in data:
+        # print(node)
         msg = msg + '\n'
         msg = msg + node['node'] + ":"
         first = True
         for result in node['results']:
+            #print(result)
             if first == False:
                 msg = msg + ' ('
+                if result['status'] == True and 'result' in result['result']:
+                    if currentHeight == int(result['result']['result']):
+                        #print('same height')
+                        send = True
+                else:
+                    #print(result['result'])
+                    send = True
             else:
                 msg = msg + ' '
+                if result['status'] == True and 'result' in result['result']:
+                    currentHeight = int(result['result']['result'])
+                else:
+                    currentHeight = 0
             
             if result['status'] == True:
                 height = int(result['result']['result'])
                 msg = msg + '{:,}'.format(height).replace(',','.')
             else:
                 send = True
-                msg = msg + ' ' + node['result']
+                msg = msg + result['result']
 
             if first == False:
                 msg = msg + ')'
