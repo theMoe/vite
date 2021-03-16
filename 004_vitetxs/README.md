@@ -2,9 +2,9 @@
 
 Frontend and backend source code for vitetxs.de.
 
-# vitefrontend
+# frontend
 
-## Project setup
+### Project setup
 ```
 npm install
 ```
@@ -27,9 +27,9 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-# vitebackend
+# backend
 
-## Install requirements
+### Install requirements
 ```
 pip install -r requirements.txt
 ```
