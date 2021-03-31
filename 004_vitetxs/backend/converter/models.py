@@ -17,10 +17,11 @@ class ConvertRequest:
         return self.vite_address
 
 class TransactionDownloadRequest:
-    def __init__(self, fromDate, toDate, viteAddress, pageMax, transactionsPerRequest):
+    def __init__(self, fromDate, toDate, viteAddress, viteAddressSender, pageMax, transactionsPerRequest):
         self.fromDate = fromDate
         self.toDate = toDate
         self.viteAddress = viteAddress
+        self.viteAddressSender = viteAddressSender
         self.pageMax = pageMax
         self.transactionsPerRequest = transactionsPerRequest
 
@@ -28,13 +29,16 @@ class TransactionDownloadRequest:
         return self.viteAddress
 
 class OrderDownloadRequest:
-    def __init__(self, fromDate, toDate, viteAddress, limit, sellBuy):
+    def __init__(self, fromDate, toDate, viteAddress, limit, sellBuy, symbol, quoteToken, tradeToken, orderStatus):
         self.fromDate = fromDate
         self.toDate = toDate
         self.viteAddress = viteAddress
         self.limit = limit
         self.sellBuy = sellBuy
-        #self.orderStatus = orderStatus
+        self.symbol = symbol
+        self.quoteToken = quoteToken
+        self.tradeToken = tradeToken
+        self.orderStatus = orderStatus
 
     def __str__(self):
         return self.viteAddress

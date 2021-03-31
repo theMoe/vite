@@ -6,6 +6,7 @@ urlpatterns = [
     path('transactions/', views.ViteTransactionDownloader.as_view()),
     path('account/', views.ViteAccount.as_view()),
     path('sbp/', views.ViteSBP.as_view()),
+    path('markets/', views.Markets.as_view()),
     path('orders/', views.ViteOrdersDownloader.as_view()),
     path('dividends/', views.ViteDividendsDownloader.as_view()),
     path('mining/staking/', views.ViteStakingsDownloader.as_view()),

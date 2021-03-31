@@ -24,6 +24,9 @@ class ConvertRequestSerializer(serializers.Serializer):
 
 class TransactionDownloadRequestSerializer(serializers.Serializer):
     viteAddress = serializers.CharField(max_length=128)
+    viteAddressSender = serializers.ListField(
+        child = serializers.CharField(max_length=128)
+    )
     fromDate = serializers.DateTimeField()
     toDate = serializers.DateTimeField()
     transactionsPerRequest = serializers.IntegerField()
@@ -40,8 +43,11 @@ class OrderDownloadRequestSerializer(serializers.Serializer):
     fromDate = serializers.DateTimeField()
     toDate = serializers.DateTimeField()
     limit = serializers.IntegerField()
-    sellBuy = serializers.IntegerField()
-    #orderStatus = [serializers.IntegerField()]
+    sellBuy = serializers.IntegerField(allow_null=True)
+    symbol = serializers.CharField(allow_null=True, max_length=128)
+    quoteToken = serializers.CharField(allow_null=True, max_length=128)
+    tradeToken = serializers.CharField(allow_null=True, max_length=128)
+    orderStatus = serializers.IntegerField(allow_null=True)
 
     def create(self, validated_data):
         return OrderDownloadRequest(**validated_data)

@@ -256,7 +256,44 @@ def loadDividends(viteAddress):
         print (e)
         return {'errorMsg': 'Exception during request.'}
 
-def loadOrders(viteAddress, limit, filterTime, sellBuy):
+def loadMarkets():
+    apiURL = __getDexAPIURL(2) + '/markets'
+    tradePairs = []
+    tradeTokens = []
+    quoteTokens = []
+    try:
+        response = requests.get(url=apiURL)
+        if response.status_code == 200:
+            resp = response.json()
+            #print(resp)
+            if (resp['code'] != 0):
+                return {'errorMsg': resp['msg']}
+            if not 'data' in resp:
+                return {'errorMsg': 'No data received from exchange'}
+            if len(resp['data']) == 0:
+                return {'errorMsg': 'No trade pairs received from exchange'}
+
+            for tradePair in resp['data']:
+                tradePairs.append(tradePair['symbol'])
+                
+                if tradePair['tradeTokenSymbol'] not in tradeTokens:
+                    tradeTokens.append(tradePair['tradeTokenSymbol'])
+                
+                if tradePair['quoteTokenSymbol'] not in quoteTokens:
+                    quoteTokens.append(tradePair['quoteTokenSymbol'])
+
+            data = {
+                'symbols': tradePairs,
+                'tradeTokens': tradeTokens,
+                'quoteTokens': quoteTokens,
+            }
+
+            return {'data': data}
+    except Exception as e:
+        print (e)
+        return {'errorMsg': 'Exception during request.'}
+
+def loadOrders(viteAddress, limit, filterTime, sellBuy, symbol, quoteToken, tradeToken, orderStatus):
     # https://vite.wiki/dex/api/dex-apis.html#get-orders
     apiURL = __getDexAPIURL(2) + '/orders'
     # Name	            Type	Is Required?	Description
@@ -329,59 +366,83 @@ def loadOrders(viteAddress, limit, filterTime, sellBuy):
     
     #if (orderStatus != None):
     #    params['status'] = orderStatus
+
+    if (symbol != None):
+        params['symbol'] = symbol
     
+    if (quoteToken != None):
+        params['quoteTokenSymbol'] = quoteToken
+
+    if (tradeToken != None):
+        params['tradeTokenSymbol'] = tradeToken
+    
+    if (orderStatus != None):
+        params['status'] = orderStatus
+
     orders = []
 
-    try:
-        response = requests.get(url=apiURL, params=params)
-        if response.status_code == 200:
-            resp = response.json()
-            #print(resp)
-            if (resp['code'] != 0):
-                return {'errorMsg': resp['msg']}
-            if not 'data' in resp:
-                return {'errorMsg': 'No data received from exchange'}
-            if not 'order' in resp['data']:
-                return {'errorMsg': 'No orders received from exchange'}
-            
-            for order in resp['data']['order']:
-                
-                dtobj = datetime.fromtimestamp(order['createTime'], timezone.utc)
-                
-                orderDict = {
-                    'address': order['address'],                    # 'vite_b2d3a3fe5e5ec11ad8c6823843482c2000920e2ef96d417e85', 
-                    'orderId': order['orderId'],                    # '6d15d8b082ae77d88bb28efcbe8002fd501da323ccac30b2a465d48fbe108a52', 
-                    'symbol': order['symbol'],                      # 'VITE_ETH-000', 
-                    'tradeTokenSymbol': order['tradeTokenSymbol'],  # 'VITE', 
-                    'quoteTokenSymbol': order['quoteTokenSymbol'],  # 'ETH-000', 
-                    #'tradeToken': 'tti_5649544520544f4b454e6e40', 
-                    #'quoteToken': 'tti_687d8a93915393b219212c73', 
-                    'side': dictSide[order['side']],                # 1, 
-                    'price': order['price'],                        # '0.0000255', 
-                    'quantity': order['quantity'],                  # '2500.0', 
-                    'amount': order['amount'],                      # '0.0637500', 
-                    'executedQuantity': order['executedQuantity'],  # '0.0', 
-                    'executedAmount': order['executedAmount'],      # '0.0000000', 
-                    'executedPercent': order['executedPercent'],    # '0.0000000', 
-                    'executedAvgPrice': order['executedAvgPrice'],  # '0.0000000',
-                    'fee': order['fee'],                            # '0.0000000', 
-                    'status': dictOrderStatus[order['status']],     #  3, 
-                    'type': dictOrderType[order['type']],           # 0, 
-                    'createTime': order['createTime'],              #  1613169379
-                    'dt': dtobj.strftime('%d/%m/%Y %H:%M:%S.%f')[:-3]
-                }
-                orders.append(orderDict)
+    runRequest = True
 
-            if len(orders) > 0:
-                data_df = pd.DataFrame(orders)
-                generated_file = generate_csv_file(data_df)
-                print('Total orders downloaded: ' + str(len(orders)))
-                print('Done')
-                return {'file': generated_file, 'ordersCount': len(orders)}
+    try:
+        while (runRequest == True):
+            response = requests.get(url=apiURL, params=params)
+            if response.status_code == 200:
+                resp = response.json()
+                #print(resp)
+                if (resp['code'] != 0):
+                    return {'errorMsg': resp['msg']}
+                if not 'data' in resp:
+                    return {'errorMsg': 'No data received from exchange'}
+                if not 'order' in resp['data']:
+                    return {'errorMsg': 'No orders received from exchange'}
+                print("Orders: " + str(len(resp['data']['order'])))
+                for order in resp['data']['order']:
+                    
+                    dtobj = datetime.fromtimestamp(order['createTime'], timezone.utc)
+                    
+                    orderDict = {
+                        'address': order['address'],                    # 'vite_b2d3a3fe5e5ec11ad8c6823843482c2000920e2ef96d417e85', 
+                        'orderId': order['orderId'],                    # '6d15d8b082ae77d88bb28efcbe8002fd501da323ccac30b2a465d48fbe108a52', 
+                        'symbol': order['symbol'],                      # 'VITE_ETH-000', 
+                        'tradeTokenSymbol': order['tradeTokenSymbol'],  # 'VITE', 
+                        'quoteTokenSymbol': order['quoteTokenSymbol'],  # 'ETH-000', 
+                        #'tradeToken': 'tti_5649544520544f4b454e6e40', 
+                        #'quoteToken': 'tti_687d8a93915393b219212c73', 
+                        'side': dictSide[order['side']],                # 1, 
+                        'price': order['price'],                        # '0.0000255', 
+                        'quantity': order['quantity'],                  # '2500.0', 
+                        'amount': order['amount'],                      # '0.0637500', 
+                        'executedQuantity': order['executedQuantity'],  # '0.0', 
+                        'executedAmount': order['executedAmount'],      # '0.0000000', 
+                        'executedPercent': order['executedPercent'],    # '0.0000000', 
+                        'executedAvgPrice': order['executedAvgPrice'],  # '0.0000000',
+                        'fee': order['fee'],                            # '0.0000000', 
+                        'status': dictOrderStatus[order['status']],     #  3, 
+                        'type': dictOrderType[order['type']],           # 0, 
+                        'createTime': order['createTime'],              #  1613169379
+                        'dt': dtobj.strftime('%d/%m/%Y %H:%M:%S.%f')[:-3]
+                    }
+                    orders.append(orderDict)
+
+                if limit == len(resp['data']['order']):
+                    lastOrder = resp['data']['order'][-1:]
+
+                    params['endTime'] = lastOrder[0]['createTime'] - 1
+
+                    runRequest = True
+                else:
+                    runRequest = False
             else:
-                return {'errorMsg': 'No orders available'}
+                return {'errorMsg': response.status_code}
+
+        if len(orders) > 0:
+            data_df = pd.DataFrame(orders)
+            generated_file = generate_csv_file(data_df)
+            print('Total orders downloaded: ' + str(len(orders)))
+            print('Done')
+            return {'file': generated_file, 'ordersCount': len(orders)}
         else:
-            return {'errorMsg': response.status_code}
+            return {'errorMsg': 'No orders available'}
     except Exception as e:
         print (e)
         return {'errorMsg': 'Exception during request.'}
@@ -499,7 +560,7 @@ def getBody(viteAddr, pg, transPerRequest):
     }
     return body
 
-def requestNodeData(viteAddress, transactionsPerRequest, pageMax, filterTime):
+def requestNodeData(viteAddress, transactionsPerRequest, pageMax, filterTime, viteAddressSender):
     nodeIP = getNodeIP()
     if nodeIP == False:
         print('Connection ERROR...')
@@ -533,7 +594,7 @@ def requestNodeData(viteAddress, transactionsPerRequest, pageMax, filterTime):
             response = requests.post(url=url, json=body, headers=header)
             if response.status_code == 200:
                 resp = response.json()
-                #print(resp)
+                # print(resp)
                 if resp['result'] == None:
                     print('Last requested page has no transaction results.')
                     endPage = False
@@ -542,34 +603,35 @@ def requestNodeData(viteAddress, transactionsPerRequest, pageMax, filterTime):
                     if result['tokenInfo'] is not None:
                         if result['tokenInfo']['tokenSymbol'] not in filterToken:
                             if (filterTime[0] == None and filterTime[1] == None) or (filterTime[0] <= result['timestamp'] and result['timestamp'] <= filterTime[1]):
-                                toAddress = result['toAddress']
-                                if toAddress == viteAddress:
-                                    transactionType = 'Recieved'
-                                    transactionMultiplier = 1
-                                else:
-                                    transactionType = 'Sent'
-                                    transactionMultiplier = -1
+                                if (len(viteAddressSender) == 0) or (result['fromAddress'] in viteAddressSender):
+                                    toAddress = result['toAddress']
+                                    if toAddress == viteAddress:
+                                        transactionType = 'Recieved'
+                                        transactionMultiplier = 1
+                                    else:
+                                        transactionType = 'Sent'
+                                        transactionMultiplier = -1
 
-                                amount = int(result['amount'])
-                                decimals = int(result['tokenInfo']['decimals'])
-                                decimalAmount = (amount / 10**decimals) * transactionMultiplier
+                                    amount = int(result['amount'])
+                                    decimals = int(result['tokenInfo']['decimals'])
+                                    decimalAmount = (amount / 10**decimals) * transactionMultiplier
 
-                                dtobj = datetime.fromtimestamp(result['timestamp'], timezone.utc) 
+                                    dtobj = datetime.fromtimestamp(result['timestamp'], timezone.utc) 
 
-                                transaction = {
-                                    'fromAddress': result['fromAddress'],
-                                    'toAddress': toAddress,
-                                    'transactionType': transactionType,
-                                    'decimalAmount': decimalAmount,
-                                    'amount': str(amount),
-                                    'decimals': decimals,
-                                    'fee': result['fee'],
-                                    'tokenName': result['tokenInfo']['tokenName'],
-                                    'tokenSymbol': result['tokenInfo']['tokenSymbol'],
-                                    'datetime': result['timestamp'], #, #dtobj,
-                                    'dt': dtobj.strftime('%d/%m/%Y %H:%M:%S.%f')[:-3]
-                                }
-                                transactions.append(transaction)
+                                    transaction = {
+                                        'fromAddress': result['fromAddress'],
+                                        'toAddress': toAddress,
+                                        'transactionType': transactionType,
+                                        'decimalAmount': decimalAmount,
+                                        'amount': str(amount),
+                                        'decimals': decimals,
+                                        'fee': result['fee'],
+                                        'tokenName': result['tokenInfo']['tokenName'],
+                                        'tokenSymbol': result['tokenInfo']['tokenSymbol'],
+                                        'datetime': result['timestamp'], #, #dtobj,
+                                        'dt': dtobj.strftime('%d/%m/%Y %H:%M:%S.%f')[:-3]
+                                    }
+                                    transactions.append(transaction)
                             elif (filterTime[0] > result['timestamp']):
                                 print('Last requested page has older transactions then requested')
                                 endPage = False

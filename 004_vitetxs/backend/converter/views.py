@@ -35,7 +35,7 @@ class ViteConverter(APIView):
 class ViteTransactionDownloader(APIView):
     def post(self, request, format=None):
         print('Transaction request incoming')
-        #print(request.data)
+        print(request.data)
         serializer = TransactionDownloadRequestSerializer(data=request.data)
         if serializer.is_valid():
             #print(serializer.validated_data)
@@ -49,7 +49,7 @@ class ViteTransactionDownloader(APIView):
 
             try:
                 #print(data)
-                result = services.requestNodeData(data.viteAddress, data.transactionsPerRequest, data.pageMax, [fromDate, toDate])
+                result = services.requestNodeData(data.viteAddress, data.transactionsPerRequest, data.pageMax, [fromDate, toDate], data.viteAddressSender)
                 print(data.viteAddress)
                 if 'file' in result:
                     response = HttpResponse(result['file'], content_type="text/csv")
@@ -72,6 +72,20 @@ class ViteTransactionDownloader(APIView):
             print(errorMsg)
             return Response(errorMsg, status=500)
 
+class Markets(APIView):
+    def post(self, request, format=None):
+        print('Order request incoming')
+        try:
+            result = services.loadMarkets()
+            if 'data' in result:
+                return Response({'data': result['data']})
+            else:
+                if 'errorMsg' in result:
+                    return Response({'msg': result['errorMsg']}, status=500)
+            return Response({'msg': 'Error class: Markets'}, status=500)
+        except:
+                return Response({'msg': 'Error class: Markets'}, status=500)
+
 class ViteOrdersDownloader(APIView):
     def post(self, request, format=None):
         print('Order request incoming')
@@ -86,13 +100,9 @@ class ViteOrdersDownloader(APIView):
                 fromDate = int(datetime(data.fromDate.year, data.fromDate.month, data.fromDate.day, 0, 0, 0, 0, pytz.UTC).timestamp())
                 toDate = int((datetime(data.toDate.year, data.toDate.month, data.toDate.day, 0, 0, 0, 0, pytz.UTC) + timedelta(days=1)).timestamp())
 
-            sellBuy = None
-            if (data.sellBuy == 0 or data.sellBuy == 1):
-                sellBuy = data.sellBuy
-
             try:
                 #print(data)
-                result = services.loadOrders(data.viteAddress, data.limit, [fromDate, toDate], sellBuy)
+                result = services.loadOrders(data.viteAddress, data.limit, [fromDate, toDate], data.sellBuy, data.symbol, data.quoteToken, data.tradeToken, data.orderStatus)
 
                 if 'file' in result:
                     response = HttpResponse(result['file'], content_type="text/csv")

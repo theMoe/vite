@@ -28,7 +28,7 @@ export default {
     links: [
       { text: "Home", href: "/" },
       { text: "Transactions", href: "/transactions" },
-      // { text: "ViteX Orders", href: "/exchangeOrders" },
+      { text: "ViteX Orders", href: "/exchangeOrders" },
       { text: "Dividends", href: "/dividends" },
       { text: "Staking VITE", href: "/stakingVITE" },
       { text: "Market Making", href: "/marketMaking" },
