@@ -8,3 +8,5 @@
 
 [004 vitetxs](https://github.com/theMoe/vite/blob/main/004_vitetxs/)
 
+[005 Whale Watcher](https://github.com/theMoe/vite/blob/main/005_WhaleWatcher/)
+
