@@ -22,7 +22,7 @@ bearer_token = ''
 access_token = ''
 access_token_secret = ''
 
-knownAccounts = {
+known_accounts = {
     'vite_0ab5b9c50b27647538cbb7918980c1dd4c281b1a53b2a7c4a1': 'Binance',
     'vite_8588d741af13504d79154312f9f4838789aa06d3d0e1b4bea1': 'Team Lock',
     'vite_a4ddd2bb327eb9b5a96ecef75489247f1f59610c22af477088': 'Ecosystem Fund',
@@ -40,10 +40,10 @@ knownAccounts = {
     'vite_86f729c9b7dda636e46b7ae738785be87f71390f532828ace9': 'Full Node Rewards',
 }
 
-fullNodeRewardAddress = ['vite_86f729c9b7dda636e46b7ae738785be87f71390f532828ace9',
+full_node_reward_address = ['vite_86f729c9b7dda636e46b7ae738785be87f71390f532828ace9',
                          'vite_1737bb7abc4883cc2f415a804f80274d3a725a68a5bee5bad3']
 
-tokenIDs = {
+token_ids = {
     'tti_5649544520544f4b454e6e40': 'VITE'
 }
 
@@ -55,22 +55,18 @@ rest_url = f'http://{server}:48132'
 last_fullnode_reward_date = None
 last_fullnode_reward_amount = 0
 
+
 class NoNeededValueProvided(Exception):
-     pass
+    pass
+
 
 class WebSocketClient():
     def tweet(self, message):
-        auth=tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
-        api=tweepy.API(auth)
-        #
-        # Die nachfolgende Zeile tweeted auf meinen privaten Account, bitte vorsichtig sein!
-        #
+        api = tweepy.API(auth)
         api.update_status(status=message)
-        #
-        print('message sent')
-    
-    
+
     def __init__(self, ):
         # websocket.enableTrace(True)
         ws = websocket.WebSocketApp(websocket_url,
@@ -87,35 +83,38 @@ class WebSocketClient():
         return header
 
     def get_chunk_response(self, param):
-        response = requests.post(rest_url, headers=self.get_header(), data=json.dumps({"jsonrpc": "2.0", "id": 0, "method":"ledger_getChunks", "params": [param, param]})).json()
-        
+        response = requests.post(rest_url, headers=self.get_header(), data=json.dumps(
+            {"jsonrpc": "2.0", "id": 0, "method": "ledger_getChunks", "params": [param, param]})).json()
+
         if ('result' not in response or len(response['result']) == 0 or 'AccountBlocks' not in response['result'][0] or response['result'][0]['AccountBlocks'] is None):
             raise NoNeededValueProvided
         else:
             return response['result'][0]['AccountBlocks']
 
     def get_account_block_response(self, data):
-        response = requests.post(rest_url, headers=self.get_header(), data=json.dumps({"jsonrpc": "2.0", "id": 2, "method":"ledger_getAccountBlockByHash", "params": [data]}))
+        response = requests.post(rest_url, headers=self.get_header(), data=json.dumps(
+            {"jsonrpc": "2.0", "id": 2, "method": "ledger_getAccountBlockByHash", "params": [data]}))
         return response.json()['result']
 
     def on_message(self, ws, message):
         global last_fullnode_reward_date
         global last_fullnode_reward_amount
-        
+
         result = int(json.loads(message)['result'])
-        
+
         try:
             chunk_response = self.get_chunk_response(result)
 
-            for accountBlock in chunk_response: 
+            for account_block in chunk_response:
 
-                if (accountBlock['blockType'] == 2):
-                    if accountBlock['accountAddress'] in fullNodeRewardAddress and accountBlock['tokenId'] == 'tti_5649544520544f4b454e6e40' and float(accountBlock['amount']) < 30000000000000000000:
-                        if accountBlock['amount'] != last_fullnode_reward_amount and last_fullnode_reward_date is not date.today().strftime("%d/%m/%Y"):
+                if (account_block['blockType'] == 2):
+                    if account_block['accountAddress'] in full_node_reward_address and account_block['tokenId'] == 'tti_5649544520544f4b454e6e40' and float(account_block['amount']) < 30000000000000000000 and float(account_block['amount']) > 0:
+                        if account_block['amount'] != last_fullnode_reward_amount and last_fullnode_reward_date is not date.today().strftime("%d/%m/%Y"):
                             last_fullnode_reward_date = date.today().strftime("%d/%m/%Y")
-                            last_fullnode_reward_amount = accountBlock['amount']
-                            amount_decimal = float(last_fullnode_reward_amount) / math.pow(10, 18)
-                            
+                            last_fullnode_reward_amount = account_block['amount']
+                            amount_decimal = float(
+                                last_fullnode_reward_amount) / math.pow(10, 18)
+
                             amount_string = f"{amount_decimal:,.4f}"
                             print('Daily Reward', amount_string)
 
@@ -127,73 +126,77 @@ class WebSocketClient():
                             self.tweet(msg)
                         else:
                             print('Daily Reward already sent')
-                        
+
                         continue
 
-                    data_hash = accountBlock['hash']
-                    account_block_response = self.get_account_block_response(data_hash)
+                    data_hash = account_block['hash']
+                    account_block_response = self.get_account_block_response(
+                        data_hash)
                     amount = account_block_response['amount']
 
                     if (amount != '0'):
-                            
-                        toAddress = account_block_response['toAddress']
-                        fromAddress = account_block_response['fromAddress']
+
+                        to_address = account_block_response['toAddress']
+                        from_address = account_block_response['fromAddress']
                         symbol = account_block_response['tokenInfo']['tokenSymbol']
-                        tokenIndex = account_block_response['tokenInfo']['index']
-                        tokenSymbol = symbol
+                        token_index = account_block_response['tokenInfo']['index']
+                        token_symbol = symbol
 
                         if (symbol not in ['VITE', 'VX', 'VCP']):
-                            tokenSymbol = symbol + '-' + '{:03}'.format(tokenIndex)
+                            token_symbol = symbol + '-' + \
+                                '{:03}'.format(token_index)
 
-                        decimals = int(account_block_response['tokenInfo']['decimals'])
+                        decimals = int(
+                            account_block_response['tokenInfo']['decimals'])
                         decimal_amount = float(amount) / math.pow(10, decimals)
 
                         if (symbol in ['VITE', 'VX'] and decimal_amount < 10000):
-                            continue    
+                            continue
 
                         print('-------------------')
                         print(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-                        print(tokenSymbol, decimal_amount, data_hash)
+                        print(token_symbol, decimal_amount, data_hash)
 
-                        value_request_json = requests.get(f'https://api.vitex.net/api/v2/exchange-rate?tokenSymbols={tokenSymbol}').json()['data'][0]
+                        value_request_json = requests.get(
+                            f'https://api.vitex.net/api/v2/exchange-rate?tokenSymbols={token_symbol}').json()['data'][0]
 
-                        usdRate = value_request_json['usdRate']
-                        usdValue = float(decimal_amount) * float(usdRate)
+                        usd_rate = value_request_json['usdRate']
+                        usd_value = float(decimal_amount) * float(usd_rate)
 
-                        usdStr = '' if symbol == 'USDT' else '(' + f"{usdValue:,.2f}" + ' USDT) '
+                        usdStr = '' if symbol == 'USDT' else '(' + \
+                            f"{usd_value:,.2f}" + ' USDT) '
 
                         if (decimal_amount % 1 == 0):
                             decimal_amount = f"{decimal_amount:,.0f}"
                         else:
                             decimal_amount = f"{decimal_amount:,.4f}"
 
-                        fromWalletStr = knownAccounts[fromAddress] if account_block_response[
-                            'fromAddress'] in knownAccounts else 'unknown address'
-                        toWalletStr = knownAccounts[toAddress] if account_block_response[
-                            'toAddress'] in knownAccounts else 'unknown address'
+                        from_wallet_str = known_accounts[from_address] if account_block_response[
+                            'fromAddress'] in known_accounts else 'unknown address'
+                        to_wallet_str = known_accounts[to_address] if account_block_response[
+                            'toAddress'] in known_accounts else 'unknown address'
 
-                        fromToStr = f"from {fromWalletStr} to {toWalletStr}"
+                        from_to_str = f"from {from_wallet_str} to {to_wallet_str}"
 
-                        print(fromToStr, usdStr)
-
-                        msg_base = f'transaction {fromToStr} at block height {result:,} on $VITE chain\n\n{decimal_amount} {symbol} {usdStr}'
+                        print(from_to_str, usdStr)
+                        msg_base = f'transaction {from_to_str} at block height {result:,} on $VITE chain\n\n{decimal_amount} {symbol} {usdStr}'
                         msg_hash = f'Details at https://explorer.vite.net/transaction/{data_hash}'
 
-                        if (usdValue >= 500000):
+                        if (usd_value >= 500000):
                             msg = f'\U0001F6A8\U0001F514\U0001F6A8\U0001F514\U0001F6A8\n\nvitetxs.de noticed a big \U0001F433 {msg_base}\n\U0001F3C3\U0001F3C3\U0001F3C3\n{msg_hash}'
 
                             webhook = DiscordWebhook(
                                 url='https://discord.com/api/webhooks/[API KEY]', content=msg)
                             webhook.execute()
                             self.tweet(msg)
-                        elif (usdValue >= 100000):
+                        elif (usd_value >= 100000):
                             msg = f'\U0001F6A8\U0001F514\U0001F6A8\n\nvitetxs.de noticed a medium \U0001F42C {msg_base}\n\U0001F3C3\U0001F3C3\n{msg_hash}'
 
                             webhook = DiscordWebhook(
                                 url='https://discord.com/api/webhooks/[API KEY]', content=msg)
                             webhook.execute()
                             self.tweet(msg)
-                        elif (usdValue >= 50000):
+                        elif (usd_value >= 50000):
                             print('Very small')
                             msg = f'\U0001F514\U0001F514\n\nvitetxs.de noticed a small \U0001F420 {msg_base}\n\U0001F3C3\n{msg_hash}'
 
@@ -222,7 +225,8 @@ class WebSocketClient():
         while driver:
             try:
                 time.sleep(1)
-                self.ws.send('{"jsonrpc":"2.0","id":17,"method":"ledger_getSnapshotChainHeight","params":null}')
+                self.ws.send(
+                    '{"jsonrpc":"2.0","id":17,"method":"ledger_getSnapshotChainHeight","params":null}')
             except KeyboardInterrupt:
                 driver = False
         time.sleep(1)
