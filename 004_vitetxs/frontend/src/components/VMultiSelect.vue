@@ -1,118 +1,115 @@
 <!-- Vue component -->
 <template>
-  <div class="form-element multi-select">
-    <!-- <multiselect v-model="value" :options="options"></multiselect> -->
-    <p>{{label}}</p>
-    <multiselect 
-        v-model="value" 
-        :tag-placeholder="tagplaceholder" 
-        :placeholder="placeholder" 
-        label="name" 
-        track-by="name" 
-        :options="allOptions" 
-        :multiple="multiple" 
+  <div class="multi-select">
+    <label>{{label}}</label>
+    <span v-if="required">required</span>
+    <span v-else>optional</span>
+    <div class="filler"/>
+    <multiselect v-if="objectOptions"
+        v-model="value"
+        track-by="name"
+        label="name"
+        :tag-placeholder="tagplaceholder || 'Add this as new tag'" 
+        :placeholder="placeholder || `Search${taggable ? ' or add' : ''} an option`"
+        :options="options" 
+        :multiple="multiple != null ? multiple : true" 
         :taggable="taggable"
-        :searchable="searchable"
+        :searchable="searchable != null ? searchable : true"
         @input="onChange"
         @tag="addTag">
     </multiselect>
-    <!-- <pre class="language-json"><code>{{ value }}</code></pre> -->
+    <multiselect v-else
+        v-model="value"
+        :tag-placeholder="tagplaceholder || 'Add this as new tag'" 
+        :placeholder="placeholder || `Search${taggable ? ' or add' : ''} an option`"
+        :options="options" 
+        :multiple="multiple != null ? multiple : true" 
+        :taggable="taggable"
+        :searchable="searchable != null ? searchable : true"
+        @input="onChange"
+        @tag="addTag">
+    </multiselect>
   </div>
 </template>
 
 <script>
-  import Multiselect from 'vue-multiselect'
-
-  export default {
+import Multiselect from 'vue-multiselect';
+export default {
     components: { Multiselect },
-    props: {
-            label: { type: String },
-            name: { type: String, },
-            placeholder: { type: String, default: 'Search or add a address', },
-            tagplaceholder: {type: String, default: 'Add this as new filter'},
-            selected: { type: [Array, Object, String, Number], default: () => [], },
-            multiple: { type: Boolean, default: true, },
-            //hideSelected: { type: Boolean, default: true, },
-            //closeOnSelect: { type: Boolean, default: false, },
-            //clearOnSelect: { type: Boolean, default: () => false, },
-            options: { type: [Array, Object], default: () => [], },
-            taggable: { required: false, type: Boolean, default: false, },
-            searchable: { type: Boolean, default: true, },
-            onChange: null,
-        },
+    props: ["label", "placeholder", "tagplaceholder", "selected", "multiple", "options", "taggable", "searchable", "onChange", "required", "objectOptions"],
     data () {
         return {
-            value: [],
-            allOptions: [],
+            value: []
         }
     },
-    // computed: {
-    //     getValue() {
-    //         if (!this.multiple && !Array.isArray(this.value)) {
-    //             this.value = [this.value];
-    //         }
-    //         return this.value;
-    //     },
-    // },
-
-    // watch: {
-    //     value(newValue, oldValue) {
-    //         // This will force the v-model of the parent to update
-    //         this.$emit('input', this.value);
-    //     },
-    // },
-
-    mounted() {
-        this.value = this.selected;
-        this.allOptions = this.options;
-    },
-
     methods: {
-        //     addSelection(option) {
-        //         if (this.multiple && !~this.value.indexOf(option)) {
-        //             this.value.push(option);
-        //         } else if (!this.multiple) {
-        //             this.value = option;
-        //         }
-        //     },
-
-        //     removeSelection(option) {
-        //         if (this.multiple) {
-        //             let index = this.value.indexOf(option)
-
-        //             if (~index) {
-        //                 this.value.splice(index, 1);
-        //             }
-        //         }
-        //     },
         addTag(newTag) {
-            const tag = {
-                name: newTag,
-                viteAddress: newTag,
-            };
-            this.allOptions.push(tag);
+            this.value.push(newTag);
 
             if (this.multiple) {
-                this.value.push(tag);
-            } else {
-                this.value = tag;
-            }
-            this.onChange(this.value)
+                this.options.push(newTag);
+            } 
+            
+            this.onChange(this.value);
         },
-        // }
-
-        // addTag (newTag) {
-        //     const tag = {
-        //         name: newTag,
-        //         viteAddress: newTag // newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
-        //     }
-        //     this.options.push(tag)
-        //     this.value.push(tag)
-        // }
     }
 }
 </script>
 
-<!-- New step!
-     Add Multiselect CSS. Can be added as a static asset or inside a component. -->
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style>
+.multi-select {
+    margin-bottom: 40px;
+    position: relative;
+    width: 50%;
+    cursor: pointer;
+}
+
+.multi-select .filler {
+    width: 100%;
+    height: 30px;
+}
+
+.multi-select > label {
+    position: absolute;
+	line-height: 150%;
+	transition: top .2s;
+	top: 0;
+    left: 5px;
+	font-size: 11pt;
+	margin-bottom: 35px;
+	color: var(--blue);
+}
+
+.multi-select > span {
+    font-size: 9pt;
+    position: absolute;
+	top: 0;
+    right: 0;
+	color: var(--orange);
+	letter-spacing: 0.03rem;
+	margin: 2px 14px;
+}
+
+.multi-select input {
+    transition: none;
+}
+
+.multi-select input:focus {
+    font-size: 10.5pt;
+}
+
+.multi-select input:focus {
+    outline: none;
+}
+
+.multiselect__option--highlight, .multiselect__option--highlight::after, .multiselect__tag, .multiselect__tag i {
+    background: var(--blue-dark) !important;
+}
+
+@media (max-width: 600px) {
+	.multiselect * {
+		font-size: 10pt !important;
+	}
+}
+</style>

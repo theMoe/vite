@@ -1,0 +1,213 @@
+:root {
+  --blue-lightest: #ecf4fd;
+  --blue-light: #90bef3;
+  --blue: #1272e6;
+  --blue-dark: #06254b;
+  --blue-darkest: #031326;
+  --orange-lightest: #fdf3ec;
+  --orange-light: #f3b690;
+  --orange: #e66312;
+  --orange-dark: #4b2006;
+  --orange-darkest: #261003;
+  --grey: #5a5a5c;
+  --grey-blue-transparent: rgba(6, 37, 75, 0.6);
+  --mobile-max-width: 1100px;
+  --nav-buttons: 8;
+  --nav-button-mobile-height: 50px;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fa-copy {
+  color: var(--grey);
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.fa-twitter {
+  color: var(--blue);
+}
+
+.fa-sync {
+  color: white;
+  margin-left: 10px;
+}
+
+.fa-file-download {
+  margin: 2px 10px 0 0;
+  font-size: 0.9em;
+}
+
+.table-wrapper,
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 200px;
+}
+
+.exception-snack > div {
+  background: linear-gradient(
+    -225deg,
+    rgb(252, 70, 57) 0%,
+    rgb(237, 128, 74) 70%,
+    var(--orange) 100%
+  ) !important;
+}
+
+.exception-snack p {
+  font-size: 16px;
+  font-weight: 500 !important;
+  line-height: 1.5em;
+}
+
+.exception-snack p a {
+  margin-left: 5px;
+  font-size: 25px;
+}
+
+.exception-snack p a > * {
+  margin-bottom: -4px;
+}
+
+.copy-snackbar > div {
+  background: linear-gradient(
+    125deg,
+    var(--blue-dark) 0%,
+    #3735c0 35%,
+    #320370 100%
+  ) !important;
+}
+
+.close-button {
+  font-size: 30px;
+  -webkit-transform: scale(1.3, 1);
+  -moz-transform: scale(1.3, 1);
+  -ms-transform: scale(1.3, 1);
+  transform: scale(1.3, 1);
+}
+
+.content-container {
+  flex-basis: calc(100% - 250px);
+  margin: 30px 30px;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1600px;
+}
+
+.card {
+  flex-basis: 90%;
+  padding: 5px 5px 10px;
+  border-radius: 25px;
+  background: white;
+  background: linear-gradient(270deg, #fef9f6 0%, #f6fafe 100%);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0 0 30px 0;
+}
+
+.card h2 {
+  color: var(--blue-dark);
+  font-size: 1.9em;
+  margin: 20px 5px 20px;
+  text-align: center;
+}
+
+.data-table {
+  background: transparent !important;
+}
+
+.data-table td,
+.data-table th,
+.data-table th > * {
+  text-align: center;
+}
+
+.data-table th[aria-sort="none"] i {
+  display: none !important;
+}
+
+.clickable-slot {
+  cursor: pointer;
+}
+
+.one-line-slot {
+  display: flex;
+  justify-content: space-evenly;
+  white-space: nowrap;
+}
+
+.exception-snack {
+  z-index: 10000 !important;
+}
+
+@media (max-width: 500px) {
+    .content-container {
+        margin: 30px 10px !important;
+    }
+
+    .card {
+        flex-basis: 100% !important;
+    }
+
+    .v-data-table {
+        min-width: 95% !important;
+    }
+}
+
+/* vuetify style changes */
+
+.v-data-table {
+  min-width: 90%;
+}
+
+.v-data-footer {
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.v-data-footer__select {
+  margin: 0 10px;
+}
+
+.v-data-footer__select .v-select {
+  margin: 0 10px;
+}
+
+@media (max-width: 500px) {
+  .v-data-footer__select {
+    margin: 0 5px;
+  }
+
+  .v-data-footer__select .v-select {
+    margin: 0 5px;
+  }
+}
+
+@media (max-width: 400px) {
+  .v-data-footer__select {
+    margin: 0;
+  }
+
+  .v-data-footer__select .v-select {
+    margin: 0 5px;
+  }
+}
